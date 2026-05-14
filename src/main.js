@@ -416,26 +416,41 @@ detailsActions.addEventListener('click', async (e) => {
 closeDetailsModalBtn.addEventListener('click', () => { detailsModalOverlay.classList.remove('modal-overlay--active'); currentSelectedTicketId = null; });
 closeDetailsBtn.addEventListener('click', () => { detailsModalOverlay.classList.remove('modal-overlay--active'); currentSelectedTicketId = null; });
 
-// Auth Logic
+// ─── Auth State Machine ─────────────────────────────────────────────────────
+
+function showApp() {
+  loginOverlay.classList.add('login-overlay--hidden');
+  loadDashboardData();
+}
+
+function showLogin() {
+  loginOverlay.classList.remove('login-overlay--hidden');
+  // Reset to login view in case user was on register form
+  if (loginView) loginView.style.display = 'block';
+  if (registerView) registerView.style.display = 'none';
+  // Clear any stale data
+  ticketList.innerHTML = '';
+  inventoryList.innerHTML = '';
+}
+
 async function checkAuth() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session }, error } = await supabase.auth.getSession();
   if (session) {
-    loginOverlay.classList.add('login-overlay--hidden');
-    loadDashboardData();
+    showApp();
   } else {
-    loginOverlay.classList.remove('login-overlay--hidden');
+    showLogin();
   }
 }
 
 supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN') {
-    loginOverlay.classList.add('login-overlay--hidden');
-    loadDashboardData();
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (session) {
+      showApp();
+    } else {
+      showLogin();
+    }
   } else if (event === 'SIGNED_OUT') {
-    loginOverlay.classList.remove('login-overlay--hidden');
-    // Clear data
-    ticketList.innerHTML = '';
-    inventoryList.innerHTML = '';
+    showLogin();
   }
 });
 
@@ -448,25 +463,35 @@ loginForm.addEventListener('submit', async (e) => {
   loginBtn.textContent = 'Entrando...';
   loginBtn.disabled = true;
 
-  const email = document.getElementById('login-email').value;
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  loginBtn.textContent = 'Entrar';
-  loginBtn.disabled = false;
-
-  if (error) {
-    if (error.message.includes('Email not confirmed')) {
-      loginError.textContent = '⚠️ E-mail não confirmado. Verifique sua caixa de entrada ou desative a confirmação de e-mail no painel Supabase.';
-    } else if (error.message.includes('Invalid login credentials')) {
-      loginError.textContent = '❌ E-mail ou senha incorretos.';
-    } else {
-      loginError.textContent = '❌ Erro: ' + error.message;
+    if (error) {
+      let msg = '❌ Erro ao fazer login.';
+      if (error.message.includes('Email not confirmed')) {
+        msg = '⚠️ E-mail não confirmado. Verifique sua caixa de entrada.';
+      } else if (error.message.includes('Invalid login credentials') || error.status === 400) {
+        msg = '❌ E-mail ou senha incorretos. Verifique seus dados.';
+      } else if (error.message.includes('rate limit')) {
+        msg = '⏳ Muitas tentativas. Aguarde alguns minutos.';
+      } else {
+        msg = '❌ ' + error.message;
+      }
+      loginError.textContent = msg;
+      loginError.style.display = 'block';
+    } else if (data.session) {
+      loginForm.reset();
+      // showApp() will be called by onAuthStateChange
     }
+  } catch (err) {
+    loginError.textContent = '❌ Erro inesperado. Tente novamente.';
     loginError.style.display = 'block';
-  } else {
-    loginForm.reset();
+  } finally {
+    loginBtn.textContent = 'Entrar';
+    loginBtn.disabled = false;
   }
 });
 
@@ -542,6 +567,11 @@ registerUserForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Init
+// Init — onAuthStateChange(INITIAL_SESSION) handles the first auth check.
 checkAuth();
-supabase.channel('public:tickets').on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, loadDashboardData).subscribe();
+supabase.channel('public:tickets').on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, () => {
+  // Only reload data when user is logged in (overlay is hidden)
+  if (loginOverlay.classList.contains('login-overlay--hidden')) {
+    loadDashboardData();
+  }
+}).subscribe();
