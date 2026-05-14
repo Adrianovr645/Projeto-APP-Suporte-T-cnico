@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Suporte Técnico</title>
+  
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/src/styles/variables.css">
+  <link rel="stylesheet" href="/src/styles/reset.css">
+  <link rel="stylesheet" href="/src/styles/layout.css">
+  <link rel="stylesheet" href="/src/styles/components/navigation.css">
+  <link rel="stylesheet" href="/src/styles/components/dashboard.css">
+  <link rel="stylesheet" href="/src/styles/components/modal.css">
+
+  <!-- Estilos da Tela de Login -->
+  <style>
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--surface-container-lowest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .login-overlay--hidden {
+      display: none !important;
+    }
+    .login-card {
+      background: var(--surface);
+      padding: var(--space-xl);
+      border-radius: var(--rounded-lg);
+      box-shadow: var(--shadow-level-3);
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--surface-variant);
+    }
+    .login-card__title {
+      margin-bottom: var(--space-lg);
+      text-align: center;
+    }
+    .login-card .form-field {
+      margin-bottom: var(--space-md);
+    }
+    .login-card .btn {
+      width: 100%;
+      margin-top: var(--space-md);
+    }
+    .auth-error {
+      color: var(--error);
+      margin-top: var(--space-sm);
+      text-align: center;
+      display: none;
+    }
+    .auth-toggle {
+      margin-top: var(--space-md);
+      text-align: center;
+    }
+    .auth-toggle a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .auth-toggle a:hover {
+      text-decoration: underline;
+    }
+
+    /* Estilos da Tabela de Chamados */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--surface);
+      border-radius: var(--rounded-lg);
+      border: 1px solid var(--surface-variant);
+      box-shadow: var(--shadow-level-1);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .data-table th, .data-table td {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--surface-variant);
+      vertical-align: middle;
+    }
+    .data-table th {
+      background-color: var(--surface-container-low);
+      font-weight: 600;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .data-table tbody tr:hover {
+      background-color: var(--surface-container-lowest);
+    }
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .data-table .tag {
+      margin: 0;
+      display: inline-flex;
+    }
+
+    /* Estilos dos Relatórios */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .chart-card {
+      background: var(--surface);
+      border-radius: var(--rounded-lg);
+      border: 1px solid var(--surface-variant);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-level-1);
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tela de Login -->
+  <div class="login-overlay" id="login-overlay">
+    <div class="login-card" id="login-view">
+      <h1 class="text-headline-md login-card__title">Suporte Técnico</h1>
+      <p class="text-body-md" style="text-align: center; margin-bottom: var(--space-xl); color: var(--on-surface-variant);">Faça login para acessar o sistema.</p>
+      <form id="login-form">
+        <div class="form-field">
+          <label for="login-email" class="text-label-md">E-mail</label>
+          <input type="email" id="login-email" required placeholder="seu@email.com">
+        </div>
+        <div class="form-field">
+          <label for="login-password" class="text-label-md">Senha</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <p class="text-body-sm auth-error" id="login-error">Credenciais inválidas.</p>
+        <button type="submit" class="btn btn--primary" id="login-btn">Entrar</button>
+      </form>
+      <div class="auth-toggle">
+        <p class="text-body-sm">Não tem acesso? <a id="show-register" onclick="document.getElementById('login-view').style.display='none'; document.getElementById('register-view').style.display='block';">Cadastre-se</a></p>
+      </div>
+    </div>
+
+    <div class="login-card" id="register-view" style="display: none;">
+      <h1 class="text-headline-md login-card__title">Novo Usuário</h1>
+      <p class="text-body-md" style="text-align: center; margin-bottom: var(--space-lg); color: var(--on-surface-variant);">Crie sua conta de acesso inicial.</p>
+      <form id="initial-register-form">
+        <div class="form-field">
+          <label for="init-reg-name" class="text-label-md">Nome</label>
+          <input type="text" id="init-reg-name" required placeholder="Seu nome">
+        </div>
+        <div class="form-field">
+          <label for="init-reg-email" class="text-label-md">E-mail</label>
+          <input type="email" id="init-reg-email" required placeholder="seu@email.com">
+        </div>
+        <div class="form-field">
+          <label for="init-reg-password" class="text-label-md">Senha</label>
+          <input type="password" id="init-reg-password" required placeholder="••••••••">
+        </div>
+        <p class="text-body-sm auth-error" id="init-reg-error"></p>
+        <p class="text-body-sm" id="init-reg-success" style="color: var(--color-success); display: none; text-align: center; margin-top: var(--space-sm);">Cadastro realizado! Faça login.</p>
+        <button type="submit" class="btn btn--primary">Cadastrar</button>
+      </form>
+      <div class="auth-toggle">
+        <p class="text-body-sm">Já possui conta? <a id="show-login" onclick="document.getElementById('register-view').style.display='none'; document.getElementById('login-view').style.display='block';">Fazer login</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-container">
+    
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar">
+      <div class="sidebar__profile">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlTIpF1iC8uUEKj2P09yeF9-Wt2pOQ05gvcgOBSunmSGc8JUDSS-Hkur5Qm3TAbWNoTY0q0ISaAyNjslqEWqx_CqX9Soi0Z3IBue1B73w1hTjOBxmlwBnjwzxBtFB1JSs5LJMtu2kqqsTeG_xm6OlfbNZ3WeSo9op3Jdv8DdB6BnuP3PrOke9ALEPkb-TsTD6PspD7g91ZnUM593lQAkPvdnyVpqpPPqArqYpcK17yZpG-Hgmw0zr3YvJAgQ5ZNG93poORRkG9Md8" alt="Agente de Suporte" class="sidebar__profile-img">
+        <div class="sidebar__profile-info">
+          <h2 class="text-headline-sm">Agente de Suporte</h2>
+          <p class="sidebar__profile-role">TI Nível 2</p>
+          <div class="sidebar__status">
+            <span class="sidebar__status-dot"></span>
+            <span class="sidebar__status-text">Online</span>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar__nav" id="sidebar-nav">
+        <a href="#" class="nav-item nav-item--active" data-page="dashboard">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+          <span class="text-label-md">Painel</span>
+        </a>
+        <a href="#" class="nav-item" data-page="tickets">
+          <span class="material-symbols-outlined">confirmation_number</span>
+          <span class="text-label-md">Chamados</span>
+        </a>
+        <a href="#" class="nav-item" data-page="reports">
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="text-label-md">Relatórios</span>
+        </a>
+        <a href="#" class="nav-item" data-page="inventory">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span class="text-label-md">Inventário</span>
+        </a>
+        <a href="#" class="nav-item" data-page="settings">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-label-md">Configurações</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar__left">
+          <button class="menu-toggle">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <h1 class="text-headline-md top-bar__title">Suporte Técnico</h1>
+        </div>
+        
+        <div class="top-bar__right">
+          <div class="search-bar">
+            <span class="material-symbols-outlined search-bar__icon">search</span>
+            <input type="text" placeholder="Buscar chamados..." class="text-body-md">
+          </div>
+          <button class="icon-btn notification-btn">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="notification-badge"></span>
+          </button>
+          <button class="text-label-md profile-link" id="logout-btn" style="cursor: pointer; background: none; border: none; color: var(--error);">
+            Sair
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Canvas -->
+      <main class="main-canvas" id="page-container">
+        
+        <!-- Dashboard Page -->
+        <div id="page-dashboard" class="page page--active">
+          <!-- Overview -->
+          <section>
+            <h2 class="text-headline-sm section-title">Visão Geral</h2>
+            <div class="overview-scroll hide-scrollbar">
+              <div class="stat-card">
+                <div class="stat-card__header">
+                  <span class="material-symbols-outlined">inbox</span>
+                  <span class="badge badge--error" id="count-open">0</span>
+                </div>
+                <div class="stat-card__content">
+                  <p class="text-headline-md" id="stat-open">0</p>
+                  <p class="text-body-sm stat-card__label">Chamados Abertos</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__header">
+                  <span class="material-symbols-outlined">engineering</span>
+                  <span class="badge badge--secondary" id="count-progress">0</span>
+                </div>
+                <div class="stat-card__content">
+                  <p class="text-headline-md" id="stat-progress">0</p>
+                  <p class="text-body-sm stat-card__label">Em Atendimento</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__header">
+                  <span class="material-symbols-outlined">hourglass_empty</span>
+                  <span class="badge badge--variant" id="count-waiting">0</span>
+                </div>
+                <div class="stat-card__content">
+                  <p class="text-headline-md" id="stat-waiting">0</p>
+                  <p class="text-body-sm stat-card__label">Aguardando Peças</p>
+                </div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-card__header">
+                  <span class="material-symbols-outlined">task_alt</span>
+                  <span class="badge badge--primary" id="count-finished">0</span>
+                </div>
+                <div class="stat-card__content">
+                  <p class="text-headline-md" id="stat-finished">0</p>
+                  <p class="text-body-sm stat-card__label">Concluídos Hoje</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Filters -->
+          <section class="filter-group" id="filter-group">
+            <button class="filter-btn filter-btn--active" data-category="Todos">Todos</button>
+            <button class="filter-btn" data-category="TI">TI</button>
+            <button class="filter-btn" data-category="Elétrica">Elétrica</button>
+            <button class="filter-btn" data-category="Predial">Predial</button>
+            <button class="filter-btn" data-category="Segurança">Segurança</button>
+            <button class="filter-btn" data-category="Telecom">Telecom</button>
+          </section>
+
+          <!-- Ticket List -->
+          <section class="ticket-grid" id="ticket-list">
+            <p class="text-body-md" style="padding: var(--space-lg); grid-column: 1 / -1; text-align: center;">Carregando chamados...</p>
+          </section>
+        </div>
+
+        <!-- Tickets Page (Table View) -->
+        <div id="page-tickets" class="page">
+          <h2 class="text-headline-sm section-title">Todos os Chamados</h2>
+          
+          <section class="filter-group" id="table-filter-group" style="margin-bottom: var(--space-lg);">
+            <button class="filter-btn filter-btn--active" data-category="Todos">Todos</button>
+            <button class="filter-btn" data-category="TI">TI</button>
+            <button class="filter-btn" data-category="Elétrica">Elétrica</button>
+            <button class="filter-btn" data-category="Predial">Predial</button>
+            <button class="filter-btn" data-category="Segurança">Segurança</button>
+            <button class="filter-btn" data-category="Telecom">Telecom</button>
+          </section>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="text-label-md">ID</th>
+                  <th class="text-label-md">Título</th>
+                  <th class="text-label-md">Categoria</th>
+                  <th class="text-label-md">Prioridade</th>
+                  <th class="text-label-md">Status</th>
+                  <th class="text-label-md">Criado em</th>
+                  <th class="text-label-md">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="ticket-table-body">
+                <tr>
+                  <td colspan="7" class="text-body-md" style="text-align: center;">Carregando chamados...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Inventory Page -->
+        <div id="page-inventory" class="page">
+          <h2 class="text-headline-sm section-title">Inventário de Ativos</h2>
+          <section class="inventory-grid" id="inventory-list">
+            <p class="text-body-md" style="padding: var(--space-lg); text-align: center;">Carregando inventário...</p>
+          </section>
+        </div>
+
+        <!-- Reports Page -->
+        <div id="page-reports" class="page">
+          <h2 class="text-headline-sm section-title">Análise de Performance e Relatórios</h2>
+          
+          <div class="overview-scroll hide-scrollbar" style="margin-bottom: var(--space-lg);">
+            <div class="stat-card">
+              <div class="stat-card__content">
+                <p class="text-headline-md" id="rep-total">0</p>
+                <p class="text-body-sm stat-card__label">Total de Chamados Histórico</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__content">
+                <p class="text-headline-md" id="rep-resolved-pct">0%</p>
+                <p class="text-body-sm stat-card__label">Taxa de Resolução</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card__content">
+                <p class="text-headline-md" id="rep-critical">0</p>
+                <p class="text-body-sm stat-card__label">Chamados Críticos</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reports-grid">
+            <!-- Gráfico: Status -->
+            <div class="chart-card">
+              <h3 class="text-label-md" style="margin-bottom: var(--space-sm); color: var(--on-surface-variant);">Distribuição por Status</h3>
+              <div class="chart-container">
+                <canvas id="chart-status"></canvas>
+              </div>
+            </div>
+
+            <!-- Gráfico: Categoria -->
+            <div class="chart-card">
+              <h3 class="text-label-md" style="margin-bottom: var(--space-sm); color: var(--on-surface-variant);">Volume por Categoria</h3>
+              <div class="chart-container">
+                <canvas id="chart-category"></canvas>
+              </div>
+            </div>
+
+            <!-- Gráfico: Prioridade -->
+            <div class="chart-card" style="grid-column: 1 / -1;">
+              <h3 class="text-label-md" style="margin-bottom: var(--space-sm); color: var(--on-surface-variant);">Demandas por Prioridade</h3>
+              <div class="chart-container" style="height: 250px;">
+                <canvas id="chart-priority"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="page-settings" class="page">
+          <h2 class="text-headline-sm section-title">Configurações e Usuários</h2>
+          
+          <div class="settings-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-lg);">
+            <!-- User Preferences -->
+            <div class="stat-card">
+              <h3 class="text-headline-sm" style="margin-bottom: var(--space-md);">Preferências</h3>
+              <div class="form-field">
+                <label class="text-label-md">Notificações por E-mail</label>
+                <input type="checkbox" checked>
+              </div>
+              <div class="form-field" style="margin-top: var(--space-md);">
+                <label class="text-label-md">Modo Escuro Automático</label>
+                <input type="checkbox" checked>
+              </div>
+            </div>
+
+            <!-- User Registration Form -->
+            <div class="stat-card">
+              <h3 class="text-headline-sm" style="margin-bottom: var(--space-md);">Cadastrar Novo Usuário</h3>
+              <form id="register-user-form">
+                <div class="form-field" style="margin-bottom: var(--space-md);">
+                  <label for="reg-name" class="text-label-md">Nome Completo</label>
+                  <input type="text" id="reg-name" required placeholder="Nome do Técnico">
+                </div>
+                <div class="form-field" style="margin-bottom: var(--space-md);">
+                  <label for="reg-email" class="text-label-md">E-mail</label>
+                  <input type="email" id="reg-email" required placeholder="email@empresa.com">
+                </div>
+                <div class="form-field" style="margin-bottom: var(--space-md);">
+                  <label for="reg-password" class="text-label-md">Senha Temporária</label>
+                  <input type="password" id="reg-password" required placeholder="••••••••">
+                </div>
+                <div class="form-field" style="margin-bottom: var(--space-md);">
+                  <label for="reg-role" class="text-label-md">Função</label>
+                  <select id="reg-role" required>
+                    <option value="Tecnico">Técnico Nível 1</option>
+                    <option value="TecnicoN2">Técnico Nível 2</option>
+                    <option value="Admin">Administrador</option>
+                  </select>
+                </div>
+                <p class="text-body-sm auth-error" id="reg-error" style="margin-bottom: var(--space-sm);"></p>
+                <p class="text-body-sm" id="reg-success" style="color: var(--primary); display: none; margin-bottom: var(--space-sm);">Usuário cadastrado com sucesso!</p>
+                <button type="submit" class="btn btn--primary" style="width: 100%;">Cadastrar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- FAB -->
+      <button class="fab" id="open-modal">
+        <span class="material-symbols-outlined">add</span>
+        <span class="text-label-md">Novo Chamado</span>
+      </button>
+
+      <!-- Modal -->
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+          <div class="modal__header">
+            <h2 class="text-headline-sm">Novo Chamado</h2>
+            <button class="icon-btn" id="close-modal">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <form class="modal__form" id="ticket-form">
+            <div class="form-field">
+              <label for="title" class="text-label-md">Título</label>
+              <input type="text" id="title" required placeholder="Ex: Monitor piscando">
+            </div>
+            <div class="form-field">
+              <label for="category" class="text-label-md">Categoria</label>
+              <select id="category" required>
+                <option value="TI">TI</option>
+                <option value="Elétrica">Elétrica</option>
+                <option value="Predial">Predial</option>
+                <option value="Segurança">Segurança</option>
+                <option value="Telecom">Telecom</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="priority" class="text-label-md">Prioridade</label>
+              <select id="priority" required>
+                <option value="Baixa">Baixa</option>
+                <option value="Média" selected>Média</option>
+                <option value="Alta">Alta</option>
+                <option value="Crítica">Crítica</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="description" class="text-label-md">Descrição</label>
+              <textarea id="description" rows="3" required placeholder="Descreva o problema em detalhes..."></textarea>
+            </div>
+            <div class="modal__actions">
+              <button type="button" class="btn btn--ghost" id="cancel-modal">Cancelar</button>
+              <button type="submit" class="btn btn--primary">Criar Chamado</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Details Modal -->
+      <div class="modal-overlay" id="details-modal-overlay">
+        <div class="modal">
+          <div class="modal__header">
+            <h2 class="text-headline-sm">Detalhes do Chamado</h2>
+            <button class="icon-btn" id="close-details-modal">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div class="details-content" id="details-content">
+            <!-- Injetado via JS -->
+          </div>
+          <div class="modal__actions modal__actions--wrap" id="details-actions">
+            <button class="btn btn--secondary" data-status="Em Atendimento">Em Atendimento</button>
+            <button class="btn btn--variant" data-status="Pausado">Pausado</button>
+            <button class="btn btn--primary" data-status="Concluído">Resolvido</button>
+            <button class="btn btn--ghost" id="close-details-btn">Fechar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Nav (Mobile) -->
+      <nav class="bottom-nav" id="bottom-nav">
+        <a href="#" class="bottom-nav__item bottom-nav__item--active" data-page="dashboard">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+          <span>Início</span>
+        </a>
+        <a href="#" class="bottom-nav__item" data-page="tickets">
+          <span class="material-symbols-outlined">confirmation_number</span>
+          <span>Chamados</span>
+        </a>
+        <a href="#" class="bottom-nav__item" data-page="inventory">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <span>Inventário</span>
+        </a>
+        <a href="#" class="bottom-nav__item" data-page="settings">
+          <span class="material-symbols-outlined">person</span>
+          <span>Perfil</span>
+        </a>
+      </nav>
+
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

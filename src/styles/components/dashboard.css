@@ -1,0 +1,261 @@
+/* Overview Section */
+.overview-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  margin: 0 calc(-1 * var(--space-md));
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .overview-scroll {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.stat-card {
+  min-width: 160px;
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-level-1);
+  transition: box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-level-2);
+}
+
+.stat-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--on-surface-variant);
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: var(--radius-default);
+  font-size: var(--fs-label-md);
+  font-weight: 600;
+}
+
+.badge--error { background-color: rgba(220, 38, 38, 0.1); color: var(--color-critical); }
+.badge--secondary { background-color: var(--secondary-container); color: var(--on-secondary-container); }
+.badge--variant { background-color: var(--surface-variant); color: var(--on-surface-variant); }
+.badge--primary { background-color: rgba(15, 23, 42, 0.1); color: var(--primary); }
+
+/* Filters */
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.filter-btn {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-label-md);
+  font-weight: 600;
+  border: 1px solid var(--outline-variant);
+  background-color: var(--surface-container-lowest);
+  color: var(--on-surface);
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background-color: var(--surface-container-low);
+}
+
+.filter-btn--active {
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+
+/* Ticket List (Bento Grid) */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+}
+
+.ticket-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .ticket-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .ticket-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ticket-card {
+  background-color: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  box-shadow: var(--shadow-level-1);
+  transition: box-shadow 0.2s;
+}
+
+.ticket-card:hover {
+  box-shadow: var(--shadow-level-2);
+}
+
+.ticket-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ticket-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.ticket-card__id {
+  color: var(--on-surface-variant);
+}
+
+.ticket-card__title {
+  margin-top: 4px;
+}
+
+.ticket-card__description {
+  color: var(--on-surface-variant);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ticket-card__time {
+  color: var(--on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ticket-card__time-icon {
+  font-size: 16px;
+}
+
+.ticket-card__actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.tag--category-electrical { background-color: rgba(234, 179, 8, 0.2); color: #854D0E; }
+.tag--category-it { background-color: rgba(59, 130, 246, 0.1); color: #1D4ED8; }
+.tag--category-predial { background-color: rgba(16, 185, 129, 0.1); color: #047857; }
+.tag--category-telecom { background-color: rgba(139, 92, 246, 0.1); color: #6D28D9; }
+.tag--category-security { background-color: rgba(39, 25, 1, 0.1); color: var(--on-tertiary-container); border-color: rgba(39, 25, 1, 0.2); }
+.tag--status-progress { background-color: rgba(15, 23, 42, 0.1); color: var(--primary); }
+
+.tag {
+  padding: 2px 8px;
+  border-radius: var(--radius-default);
+  font-size: var(--fs-label-md);
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.tag--priority-high { background-color: rgba(220, 38, 38, 0.1); color: var(--color-critical); border-color: rgba(220, 38, 38, 0.2); }
+.tag--priority-medium { background-color: rgba(234, 179, 8, 0.1); color: var(--color-warning); border-color: rgba(234, 179, 8, 0.2); }
+.tag--category-it { background-color: var(--secondary-container); color: var(--on-secondary-container); border-color: var(--outline-variant); }
+.tag--status { background-color: var(--surface-container); color: var(--on-surface-variant); }
+
+.ticket-card__footer {
+  margin-top: auto;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--outline-variant);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-default);
+  font-size: var(--fs-label-md);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn--ghost {
+  color: var(--on-surface-variant);
+}
+
+.btn--ghost:hover {
+  background-color: var(--surface-container-low);
+  color: var(--primary);
+}
+
+.btn--primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn--primary:hover {
+  opacity: 0.9;
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 80px; /* Above BottomNav */
+  right: var(--space-md);
+  background-color: var(--primary);
+  color: var(--on-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-shadow: var(--shadow-level-3);
+  z-index: 40;
+  transition: all 0.2s;
+}
+
+@media (min-width: 768px) {
+  .fab {
+    bottom: var(--space-md);
+  }
+}
+
+.fab:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.fab span:last-child {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .fab span:last-child {
+    display: block;
+  }
+}

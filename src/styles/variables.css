@@ -1,0 +1,96 @@
+:root {
+  /* Colors - Surface */
+  --surface: #fcf8fa;
+  --surface-dim: #dcd9db;
+  --surface-bright: #fcf8fa;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f6f3f5;
+  --surface-container: #f0edef;
+  --surface-container-high: #eae7e9;
+  --surface-container-highest: #e4e2e4;
+  
+  /* Colors - On Surface */
+  --on-surface: #1b1b1d;
+  --on-surface-variant: #45464d;
+  --inverse-surface: #303032;
+  --inverse-on-surface: #f3f0f2;
+  
+  /* Colors - Outline */
+  --outline: #76777d;
+  --outline-variant: #c6c6cd;
+  --surface-tint: #565e74;
+  
+  /* Colors - Primary */
+  --primary: #0F172A; /* Updated from DESIGN.md text: Navy Blue */
+  --on-primary: #ffffff;
+  --primary-container: #dae2fd;
+  --on-primary-container: #131b2e;
+  --inverse-primary: #bec6e0;
+  
+  /* Colors - Secondary */
+  --secondary: #515f74;
+  --on-secondary: #ffffff;
+  --secondary-container: #d5e3fd;
+  --on-secondary-container: #0d1c2f;
+  
+  /* Colors - Tertiary */
+  --tertiary: #000000;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #271901;
+  --on-tertiary-container: #98805d;
+  
+  /* Colors - Functional (from DESIGN.md text) */
+  --color-critical: #DC2626;
+  --color-warning: #EAB308;
+  --color-success: #16A34A;
+  --color-info: #2563EB;
+  
+  /* Error (Standard) */
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #93000a;
+
+  /* Typography */
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Font Sizes & Line Heights */
+  --fs-headline-lg: 30px;
+  --lh-headline-lg: 38px;
+  --fs-headline-md: 24px;
+  --lh-headline-md: 32px;
+  --fs-headline-sm: 20px;
+  --lh-headline-sm: 28px;
+  --fs-body-lg: 16px;
+  --lh-body-lg: 24px;
+  --fs-body-md: 14px;
+  --lh-body-md: 20px;
+  --fs-body-sm: 12px;
+  --lh-body-sm: 16px;
+  --fs-label-md: 12px;
+  --lh-label-md: 16px;
+  --fs-code: 13px;
+  --lh-code: 18px;
+
+  /* Border Radius */
+  --radius-sm: 0.125rem;
+  --radius-default: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --container-margin: 24px;
+  --gutter: 16px;
+
+  /* Shadows (from DESIGN.md) */
+  --shadow-level-1: 0px 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-level-2: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-level-3: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,108 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal {
+  background-color: var(--surface);
+  width: 90%;
+  max-width: 500px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-lg);
+  border: 1px solid var(--outline-variant);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal-overlay--active .modal {
+  transform: translateY(0);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-field label {
+  color: var(--on-surface-variant);
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--surface-variant);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--on-surface);
+  font-family: inherit;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb, 15, 23, 42), 0.1);
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.modal__actions--wrap {
+  flex-wrap: wrap;
+}
+
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.details-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: var(--space-xs);
+}
+
+.details-row span:first-child {
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}

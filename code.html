@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard de Suporte Técnico</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f3f0f2",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-container-low": "#f6f3f5",
+                        "tertiary-container": "#271901",
+                        "surface-bright": "#fcf8fa",
+                        "surface": "#fcf8fa",
+                        "inverse-surface": "#303032",
+                        "on-tertiary-fixed": "#271901",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-primary-container": "#7c839b",
+                        "on-surface": "#1b1b1d",
+                        "surface-variant": "#e4e2e4",
+                        "primary-container": "#131b2e",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#565e74",
+                        "background": "#fcf8fa",
+                        "on-secondary-container": "#57657b",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "on-tertiary-container": "#98805d",
+                        "outline": "#76777d",
+                        "surface-dim": "#dcd9db",
+                        "on-background": "#1b1b1d",
+                        "surface-container": "#f0edef",
+                        "on-primary-fixed": "#131b2e",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#45464d",
+                        "primary": "#000000",
+                        "tertiary": "#000000",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed": "#fcdeb5",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-high": "#eae7e9",
+                        "secondary-fixed": "#d5e3fd",
+                        "secondary-container": "#d5e3fd",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#515f74",
+                        "primary-fixed": "#dae2fd",
+                        "on-secondary-fixed": "#0d1c2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "sm": "8px",
+                        "base": "4px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "xl": "32px",
+                        "container-margin": "24px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "code": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "code": ["13px", { "lineHeight": "18px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-20 md:pb-0 md:flex">
+<!-- NavigationDrawer (Desktop) -->
+<aside class="hidden md:flex flex-col py-md gap-xs bg-surface-container-low border-r border-outline-variant shadow-sm fixed left-0 top-0 h-full w-64 z-50">
+<div class="px-md pb-md flex items-center gap-md border-b border-outline-variant">
+<img alt="Foto do Agente" class="w-10 h-10 rounded-full object-cover" data-alt="A professional headshot of a corporate support agent, featuring a clean, well-lit studio environment. The individual is dressed in modern business casual attire, exuding confidence and competence. The lighting is soft and even, highlighting a friendly yet serious demeanor suitable for a technical support role." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlTIpF1iC8uUEKj2P09yeF9-Wt2pOQ05gvcgOBSunmSGc8JUDSS-Hkur5Qm3TAbWNoTY0q0ISaAyNjslqEWqx_CqX9Soi0Z3IBue1B73w1hTjOBxmlwBnjwzxBtFB1JSs5LJMtu2kqqsTeG_xm6OlfbNZ3WeSo9op3Jdv8DdB6BnuP3PrOke9ALEPkb-TsTD6PspD7g91ZnUM593lQAkPvdnyVpqpPPqArqYpcK17yZpG-Hgmw0zr3YvJAgQ5ZNG93poORRkG9Md8"/>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary">Agente de Suporte</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">TI Nível 2</p>
+<div class="flex items-center gap-xs mt-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-md text-label-md text-on-surface-variant">Online</span>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-2 pt-md space-y-1">
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-full mx-2 cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Painel</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full mx-2 cursor-pointer duration-200 transition-all" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-label-md text-label-md">Chamados</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full mx-2 cursor-pointer duration-200 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Relatórios</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full mx-2 cursor-pointer duration-200 transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-label-md">Inventário</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-full mx-2 cursor-pointer duration-200 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Configurações</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Mobile & Desktop Header) -->
+<header class="flex items-center justify-between px-md w-full h-16 bg-surface border-b border-outline-variant flat no shadows sticky top-0 z-40">
+<div class="flex items-center gap-md">
+<button class="md:hidden text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer active:opacity-80 p-sm rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Suporte Técnico</h1>
+</div>
+<div class="flex items-center gap-md">
+<!-- Search Bar (Desktop) -->
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-md py-sm border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary w-64 transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-sm">search</span>
+<input class="bg-transparent border-none outline-none text-body-md w-full p-0 placeholder-on-surface-variant" placeholder="Buscar chamados..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer active:opacity-80 p-sm rounded-full relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="hidden md:flex text-on-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer active:opacity-80 font-label-md text-label-md items-center gap-xs px-sm py-sm rounded-lg">
+                    Perfil
+                </button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-md md:p-container-margin flex flex-col gap-xl">
+<!-- Mobile Search -->
+<div class="md:hidden flex items-center bg-surface-container-low rounded-full px-md py-sm border border-outline-variant focus-within:border-primary w-full">
+<span class="material-symbols-outlined text-on-surface-variant text-sm mr-sm">search</span>
+<input class="bg-transparent border-none outline-none text-body-md w-full p-0" placeholder="Buscar chamados..." type="text"/>
+</div>
+<!-- Status Section -->
+<section>
+<h2 class="font-headline-sm text-headline-sm text-on-surface mb-md">Visão Geral</h2>
+<div class="flex overflow-x-auto hide-scrollbar gap-md pb-sm -mx-md px-md md:mx-0 md:px-0 md:grid md:grid-cols-4">
+<div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="material-symbols-outlined">inbox</span>
+<span class="font-label-md text-label-md bg-error/10 text-error px-2 py-1 rounded">12</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface">12</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chamados Abertos</p>
+</div>
+</div>
+<div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="material-symbols-outlined">engineering</span>
+<span class="font-label-md text-label-md bg-secondary-container text-on-secondary-container px-2 py-1 rounded">8</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface">8</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Em Atendimento</p>
+</div>
+</div>
+<div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="material-symbols-outlined">hourglass_empty</span>
+<span class="font-label-md text-label-md bg-surface-variant text-on-surface-variant px-2 py-1 rounded">3</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface">3</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Aguardando Peças</p>
+</div>
+</div>
+<div class="min-w-[160px] md:min-w-0 bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="material-symbols-outlined">task_alt</span>
+<span class="font-label-md text-label-md bg-primary/10 text-primary px-2 py-1 rounded">24</span>
+</div>
+<div>
+<p class="font-headline-md text-headline-md text-on-surface">24</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Concluídos Hoje</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Filters -->
+<section class="flex flex-wrap gap-sm">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:opacity-90 transition-opacity border border-transparent">
+                    Todos
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:bg-surface-container-low transition-colors">
+                    TI
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:bg-surface-container-low transition-colors">
+                    Elétrica
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:bg-surface-container-low transition-colors">
+                    Predial
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:bg-surface-container-low transition-colors">
+                    Segurança
+                </button>
+<button class="bg-surface-container-lowest text-on-surface border border-outline-variant font-label-md text-label-md px-md py-sm rounded-full cursor-pointer hover:bg-surface-container-low transition-colors">
+                    Telecom
+                </button>
+</section>
+<!-- Ticket List (Bento Grid Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+<!-- Ticket Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-code text-code text-on-surface-variant">#TCK-8492</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-xs">Reparo de Ar Condicionado</h3>
+</div>
+<span class="bg-error/10 text-error border border-error/20 font-label-md text-label-md px-2 py-1 rounded">Crítica</span>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-[#FEF08A]/30 text-[#854D0E] font-label-md text-label-md px-2 py-1 rounded border border-[#FEF08A]">Elétrica</span>
+<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-2 py-1 rounded">Pendente</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                        Unidade condensadora do servidor principal apresentando falha. Temperatura subindo rapidamente, risco de desligamento térmico.
+                    </p>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Há 15 min
+                        </span>
+<div class="flex gap-sm">
+<button class="text-on-surface-variant hover:text-primary font-label-md text-label-md px-sm py-xs rounded hover:bg-surface-container-low transition-colors">Detalhes</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded hover:opacity-90 transition-opacity">Atribuir</button>
+</div>
+</div>
+</article>
+<!-- Ticket Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-code text-code text-on-surface-variant">#TCK-8491</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-xs">Falha de Conexão VPN</h3>
+</div>
+<span class="bg-[#F97316]/10 text-[#C2410C] border border-[#F97316]/20 font-label-md text-label-md px-2 py-1 rounded">Alta</span>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-secondary-container/50 text-on-secondary-container font-label-md text-label-md px-2 py-1 rounded border border-secondary-container">TI</span>
+<span class="bg-primary/10 text-primary font-label-md text-label-md px-2 py-1 rounded">Em Progresso</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                        Usuários da filial norte não conseguem autenticar na VPN corporativa. Erro de certificado expirado reportado.
+                    </p>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Há 2 horas
+                        </span>
+<div class="flex gap-sm">
+<button class="text-on-surface-variant hover:text-primary font-label-md text-label-md px-sm py-xs rounded hover:bg-surface-container-low transition-colors">Detalhes</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded hover:opacity-90 transition-opacity">Atribuir</button>
+</div>
+</div>
+</article>
+<!-- Ticket Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-md shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-code text-code text-on-surface-variant">#TCK-8490</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-xs">Câmera Externa Offline</h3>
+</div>
+<span class="bg-surface-variant text-on-surface-variant border border-outline-variant font-label-md text-label-md px-2 py-1 rounded">Média</span>
+</div>
+<div class="flex flex-wrap gap-xs">
+<span class="bg-tertiary-container/20 text-on-tertiary-container font-label-md text-label-md px-2 py-1 rounded border border-tertiary-container/30">Segurança</span>
+<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-2 py-1 rounded">Pendente</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+                        Câmera de segurança do portão principal perdeu sinal durante a chuva. Possível problema de cabeamento externo.
+                    </p>
+<div class="mt-auto pt-md border-t border-outline-variant flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px]">schedule</span> Há 4 horas
+                        </span>
+<div class="flex gap-sm">
+<button class="text-on-surface-variant hover:text-primary font-label-md text-label-md px-sm py-xs rounded hover:bg-surface-container-low transition-colors">Detalhes</button>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-sm py-xs rounded hover:opacity-90 transition-opacity">Atribuir</button>
+</div>
+</div>
+</article>
+</section>
+</main>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-20 md:bottom-md right-md bg-primary text-on-primary rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex items-center gap-sm px-md py-sm z-40 group">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-md text-label-md group-hover:block md:block hidden">Novo Chamado</span>
+</button>
+</div>
+<!-- BottomNavBar (Mobile) -->
+<nav class="flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant shadow-lg fixed bottom-0 w-full z-50 md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl p-xs scale-95 duration-150 active:bg-surface-container cursor-pointer w-16" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-[10px] mt-1">Início</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-xs scale-95 duration-150 active:bg-surface-container cursor-pointer w-16" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-label-md text-[10px] mt-1">Chamados</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-xs scale-95 duration-150 active:bg-surface-container cursor-pointer w-16" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-md text-[10px] mt-1">Inventário</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-xs scale-95 duration-150 active:bg-surface-container cursor-pointer w-16" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-[10px] mt-1">Perfil</span>
+</a>
+</nav>
+</body></html>

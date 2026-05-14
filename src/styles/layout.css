@@ -1,0 +1,61 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .app-container {
+    flex-direction: row;
+  }
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents overflow issues */
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: 256px; /* Width of Sidebar */
+  }
+}
+
+.main-canvas {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+  .main-canvas {
+    padding: var(--container-margin);
+  }
+}
+
+.page {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.page--active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Typography Utility Classes */
+.text-headline-lg { font-size: var(--fs-headline-lg); line-height: var(--lh-headline-lg); font-weight: 700; letter-spacing: -0.02em; }
+.text-headline-md { font-size: var(--fs-headline-md); line-height: var(--lh-headline-md); font-weight: 600; letter-spacing: -0.01em; }
+.text-headline-sm { font-size: var(--fs-headline-sm); line-height: var(--lh-headline-sm); font-weight: 600; }
+.text-body-lg { font-size: var(--fs-body-lg); line-height: var(--lh-body-lg); font-weight: 400; }
+.text-body-md { font-size: var(--fs-body-md); line-height: var(--lh-body-md); font-weight: 400; }
+.text-body-sm { font-size: var(--fs-body-sm); line-height: var(--lh-body-sm); font-weight: 400; }
+.text-label-md { font-size: var(--fs-label-md); line-height: var(--lh-label-md); font-weight: 600; letter-spacing: 0.05em; }
+.text-code { font-size: var(--fs-code); line-height: var(--lh-code); font-weight: 500; }
