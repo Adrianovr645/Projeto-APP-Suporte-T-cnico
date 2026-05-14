@@ -100,4 +100,9 @@ Thumbs.db
 
 # Project specific
 .agents/
+skills-lock.json
 supabase/.temp/
+
+# Vite cache
+.vite/
+vite.config.js.timestamp-*
