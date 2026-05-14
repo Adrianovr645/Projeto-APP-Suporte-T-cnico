@@ -56,6 +56,7 @@ let currentCategory = 'Todos';
 let currentTableCategory = 'Todos';
 let currentPage = 'dashboard';
 let currentSelectedTicketId = null;
+let currentUser = null;
 
 // Chart Instances
 let chartStatus = null;
@@ -372,16 +373,52 @@ function showDetails(ticketId) {
   const ticket = allTickets.find(t => t.id === ticketId);
   if (!ticket) return;
 
+  let historyHtml = '<p class="text-body-sm" style="color: var(--on-surface-variant); padding: 8px;">Nenhum histórico registrado.</p>';
+  if (ticket.historico) {
+    try {
+      let histArr = typeof ticket.historico === 'string' ? JSON.parse(ticket.historico) : ticket.historico;
+      if (Array.isArray(histArr) && histArr.length > 0) {
+        historyHtml = histArr.map(h => 
+          `<div style="margin-bottom: 8px; border-left: 2px solid var(--primary); padding-left: 8px;">
+            <p class="text-body-sm" style="font-weight: 600;">${h.user} <span style="font-weight: normal; color: var(--on-surface-variant); font-size: 12px;">em ${new Date(h.date).toLocaleString('pt-BR')}</span></p>
+            <p class="text-body-sm">${h.action}</p>
+          </div>`
+        ).join('');
+      } else if (typeof ticket.historico === 'string' && ticket.historico.trim() !== '') {
+        historyHtml = `<p class="text-body-sm" style="white-space: pre-wrap; padding: 8px;">${ticket.historico}</p>`;
+      }
+    } catch(e) {
+      historyHtml = `<p class="text-body-sm" style="white-space: pre-wrap; padding: 8px;">${ticket.historico}</p>`;
+    }
+  }
+
   detailsContent.innerHTML = `
     <div class="details-row"><span>ID</span><span>#${ticket.id.toUpperCase()}</span></div>
     <div class="details-row"><span>Título</span><span>${ticket.title}</span></div>
-    <div class="details-row"><span>Status</span><span class="tag">${ticket.status}</span></div>
+    <div class="details-row">
+      <span>Status Atual</span>
+      <select id="details-status-select" class="form-field" style="padding: 4px; border-radius: 4px; border: 1px solid var(--surface-variant); font-family: inherit;">
+        <option value="Pendente" ${ticket.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+        <option value="Em Atendimento" ${ticket.status === 'Em Atendimento' ? 'selected' : ''}>Em Atendimento</option>
+        <option value="Pausado" ${ticket.status === 'Pausado' ? 'selected' : ''}>Pausado</option>
+        <option value="Concluído" ${ticket.status === 'Concluído' ? 'selected' : ''}>Concluído</option>
+      </select>
+    </div>
     <div class="details-row"><span>Categoria</span><span>${ticket.category}</span></div>
     <div class="details-row"><span>Prioridade</span><span>${ticket.priority}</span></div>
     <div class="details-row"><span>Criado em</span><span>${new Date(ticket.created_at).toLocaleString('pt-BR')}</span></div>
     <div style="margin-top: var(--space-md);">
-      <p class="text-label-md" style="color: var(--on-surface-variant); margin-bottom: 4px;">Descrição</p>
-      <p class="text-body-md">${ticket.description}</p>
+      <p class="text-label-md" style="color: var(--on-surface-variant); margin-bottom: 4px;">Descrição Inicial</p>
+      <p class="text-body-md" style="background: var(--surface-container-lowest); padding: var(--space-sm); border-radius: var(--rounded-md);">${ticket.description}</p>
+    </div>
+    
+    <div style="margin-top: var(--space-md);">
+      <p class="text-label-md" style="color: var(--on-surface-variant); margin-bottom: 4px;">Histórico de Ações e Observações</p>
+      <div style="background: var(--surface-container-lowest); padding: var(--space-sm); border-radius: var(--rounded-md); max-height: 180px; overflow-y: auto; margin-bottom: var(--space-sm);">
+        ${historyHtml}
+      </div>
+      <label class="text-label-md" for="details-observacao" style="color: var(--on-surface-variant); display: block; margin-bottom: 4px;">Adicionar Observação</label>
+      <textarea id="details-observacao" rows="3" placeholder="Digite uma nova observação ou ação realizada..." style="width: 100%; padding: 8px; border: 1px solid var(--surface-variant); border-radius: var(--rounded-md); font-family: inherit; resize: vertical;"></textarea>
     </div>
   `;
   detailsModalOverlay.classList.add('modal-overlay--active');
@@ -405,11 +442,61 @@ async function handleTicketAction(e) {
 }
 
 detailsActions.addEventListener('click', async (e) => {
-  const btn = e.target.closest('[data-status]');
-  if (btn && currentSelectedTicketId) {
-    const newStatus = btn.getAttribute('data-status');
-    await updateTicketStatus(currentSelectedTicketId, newStatus);
-    // Modal updates automatically via real-time subscription calling loadDashboardData
+  const saveBtn = e.target.closest('#save-details-btn');
+  if (saveBtn && currentSelectedTicketId) {
+    const ticket = allTickets.find(t => t.id === currentSelectedTicketId);
+    if (!ticket) return;
+
+    saveBtn.textContent = 'Salvando...';
+    saveBtn.disabled = true;
+
+    try {
+      const newStatus = document.getElementById('details-status-select').value;
+      const observacaoText = document.getElementById('details-observacao').value.trim();
+      const userName = currentUser?.user_metadata?.full_name || currentUser?.email || 'Técnico';
+      
+      let histArr = [];
+      if (ticket.historico) {
+        try {
+          histArr = typeof ticket.historico === 'string' ? JSON.parse(ticket.historico) : ticket.historico;
+          if (!Array.isArray(histArr)) histArr = [{ action: ticket.historico, user: 'Sistema', date: new Date().toISOString() }];
+        } catch(err) {
+          histArr = [{ action: ticket.historico, user: 'Sistema', date: new Date().toISOString() }];
+        }
+      }
+
+      let actionsDesc = [];
+      if (ticket.status !== newStatus) actionsDesc.push(`Status alterado para [${newStatus}]`);
+      if (observacaoText) actionsDesc.push(`Observação: ${observacaoText}`);
+
+      let updatePayload = { status: newStatus };
+      
+      if (actionsDesc.length > 0) {
+        histArr.push({
+          action: actionsDesc.join(' | '),
+          user: userName,
+          date: new Date().toISOString()
+        });
+        // Supabase lets us store stringified JSON in a text field, or a JSON object in a JSON field
+        updatePayload.historico = JSON.stringify(histArr);
+        if (observacaoText) updatePayload.observacoes = observacaoText;
+      }
+
+      const { error } = await supabase.from('tickets').update(updatePayload).eq('id', currentSelectedTicketId);
+      if (error) throw error;
+      
+      // Update local state instantly for the modal
+      ticket.status = newStatus;
+      if (updatePayload.historico) ticket.historico = updatePayload.historico;
+      if (updatePayload.observacoes) ticket.observacoes = updatePayload.observacoes;
+      showDetails(currentSelectedTicketId);
+      
+    } catch (err) {
+      alert('Erro ao salvar alterações: ' + err.message);
+    } finally {
+      saveBtn.textContent = 'Salvar Alterações';
+      saveBtn.disabled = false;
+    }
   }
 });
 
@@ -436,8 +523,10 @@ function showLogin() {
 async function checkAuth() {
   const { data: { session }, error } = await supabase.auth.getSession();
   if (session) {
+    currentUser = session.user;
     showApp();
   } else {
+    currentUser = null;
     showLogin();
   }
 }
@@ -445,11 +534,14 @@ async function checkAuth() {
 supabase.auth.onAuthStateChange((event, session) => {
   if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
     if (session) {
+      currentUser = session.user;
       showApp();
     } else {
+      currentUser = null;
       showLogin();
     }
   } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
     showLogin();
   }
 });
